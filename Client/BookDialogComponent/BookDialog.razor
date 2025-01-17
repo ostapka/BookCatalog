@@ -1,0 +1,37 @@
+﻿<Modal @bind-Visible="IsVisible">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@(adding ? "Add Book" : "Edit Book")</ModalTitle>
+            <CloseButton Clicked="CloseModal" />
+        </ModalHeader>
+        <ModalBody>
+            @if (Book != null)
+            {
+                <Field Class="d-flex align-items-center gap-2">
+                    <FieldLabel>Title</FieldLabel>
+                    <TextEdit Placeholder="Enter title..." Text="@Book.Title" TextChanged="@(value => Book.Title = value)" />
+                </Field>
+                <Field Class="d-flex align-items-center gap-2">
+                    <FieldLabel>Author</FieldLabel>
+                    <TextEdit Placeholder="Enter author..." Text="@Book.Author" TextChanged="@(value => Book.Author = value)" />
+                </Field>
+                <Field Class="d-flex align-items-center gap-2">
+                    <FieldLabel>Genre</FieldLabel>
+                    <TextEdit Placeholder="Enter genre..." Text="@Book.Genre" TextChanged="@(value => Book.Genre = value)" />
+                </Field>
+                <Field Class="d-flex align-items-center gap-2">
+                    <FieldLabel>Publish Date</FieldLabel>
+                    <DateEdit Placeholder="Enterpublish date..." TValue="DateTime" Date="@Book.PublishedDate" DateChanged="@(value => Book.PublishedDate = value)" />
+                </Field>
+            }
+            else
+            {
+                <p>No book selected.</p>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="CloseModal">Close</Button>
+            <Button Color="Color.Primary" Clicked="SaveChanges">Save Changes</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

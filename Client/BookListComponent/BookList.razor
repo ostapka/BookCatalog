@@ -1,0 +1,96 @@
+﻿@using Blazorise.DataGrid
+@using BookCatalog.Client.BookDialogComponent
+@using BookCatalog.Shared.Contracts.Response
+@using BookCatalog.Client.BookDeleteDialogComponent
+
+<PageTitle>Book List</PageTitle>
+
+<style>
+    .bold-label {
+        font-weight: bold;
+    }
+
+</style>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <label for="textInput" class="bold-label">Search:</label>
+    <TextEdit id="textInput" Placeholder="Search by title, author or genre..." Text="@inputText" TextChanged="@OnSearchTextChanged" />
+</div>
+
+<DataGrid TItem="BookResponse"
+          Data="@booksList"
+          @bind-SelectedRow="@selectedBook"
+          @bind-Value="@inputText"
+          ReadData="@LoadData"
+          TotalItems="@totalItemCount"
+          Responsive
+          Editable
+          ShowPager
+          ShowPageSizes
+          Sortable="true"
+          SortMode="DataGridSortMode.Single"
+          SortChanged="@OnSortChanged"
+          PagerPosition="DataGridPagerPosition.TopAndBottom"
+          PagerOptions="new(){ ButtonSize=Size.Small }"
+          @ref="dataGrid">
+    <DataGridColumns>
+        <DataGridColumn Field="@nameof(BookResponse.Title)" Caption="Title" Editable />
+        <DataGridColumn Field="@nameof(BookResponse.Author)" Caption="Author" Editable />
+        <DataGridColumn Field="@nameof(BookResponse.Genre)" Caption="Genre" Editable />
+        <DataGridColumn Field="@nameof(BookResponse.PublishedDate)" Caption="Published Date" Editable />
+        <DataGridCommandColumn>
+            <NewCommandTemplate>
+                <Button Color="Color.Success" Size="Size.Small" Clicked="@(() => ShowModal(true))">Add Book</Button>
+            </NewCommandTemplate>
+            <EditCommandTemplate>
+                <Button Color="Color.Primary" Size="Size.Small" Clicked="@(() => ShowModal(false))">Edit</Button>
+            </EditCommandTemplate>
+            <DeleteCommandTemplate>
+                <Button Color="Color.Danger" Size="Size.Small" Clicked="ShowDeleteModal">Delete</Button>
+            </DeleteCommandTemplate>
+        </DataGridCommandColumn>
+    </DataGridColumns>
+    <PageButtonTemplate>
+        <Span TextColor="TextColor.Success">
+            @context.PageNumber
+        </Span>
+    </PageButtonTemplate>
+    <NextPageButtonTemplate><Icon Name="IconName.StepForward" TextColor="TextColor.Success" /></NextPageButtonTemplate>
+    <PreviousPageButtonTemplate><Icon Name="IconName.StepBackward" TextColor="TextColor.Success" /></PreviousPageButtonTemplate>
+    <LastPageButtonTemplate><Icon Name="IconName.Forward" TextColor="TextColor.Success" /></LastPageButtonTemplate>
+    <FirstPageButtonTemplate><Icon Name="IconName.Backward" TextColor="TextColor.Success" /></FirstPageButtonTemplate>
+    <TotalItemsTemplate><Badge Color="Color.Success">@context.TotalItems total items</Badge></TotalItemsTemplate>
+    <TotalItemsShortTemplate><Badge Color="Color.Success">@context.TotalItems</Badge></TotalItemsShortTemplate>
+    <ItemsPerPageTemplate></ItemsPerPageTemplate>
+    <PageSelectorTemplate>
+        <Select TextColor="TextColor.Success" @bind-SelectedValue="@context.CurrentPage" Size="Size.Small">
+            @for (int i = context.FirstVisiblePage; i <= context.LastVisiblePage; ++i)
+            {
+                var pageNumber = i;
+                <SelectItem Value="@pageNumber">@pageNumber</SelectItem>
+            }
+        </Select>
+    </PageSelectorTemplate>
+    <PageSizesTemplate>
+        <Select TextColor="TextColor.Success" @bind-SelectedValue="@context.CurrentPageSize" Size="Size.Small">
+            @foreach (var curPageSize in context.PageSizes)
+            {
+                <SelectItem Value="@curPageSize">@curPageSize</SelectItem>
+            }
+        </Select>
+    </PageSizesTemplate>
+</DataGrid>
+
+<Button Color="Color.Primary" Size="Size.Small" Clicked="@TriggerFileUpload">Add Books</Button>
+<InputFile id="fileInput" style="display:none" OnChange="HandleFileSelected" multiple />
+
+<BookDialog IsVisible="@modalVisible"
+            IsVisibleChanged="@(value => modalVisible = value)"
+            Book="@selectedBook"
+            BookChanged="@(value => selectedBook = value)"
+            adding="@adding"
+            OnSave="SaveBookDetails" />
+
+<BookDeleteDialog IsVisible="@deleteModalVisible"
+                  IsVisibleChanged="@(value => deleteModalVisible = value)"
+                  Book="@selectedBook" />

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Client/Dockerfile
+    ports:
+      - "5554:80"
+    volumes:
+      - ./wwwroot:/app/wwwroot  # Mount the local wwwroot directory to container's /app/wwwroot
+    depends_on:
+      - server
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+
+  server:
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data-protection-keys:/home/app/.aspnet/DataProtection-Keys  # Persist data protection keys
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

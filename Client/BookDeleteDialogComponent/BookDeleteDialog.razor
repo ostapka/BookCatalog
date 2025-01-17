@@ -1,0 +1,22 @@
+﻿<Modal @bind-Visible="IsVisible">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@Title</ModalTitle>
+            <CloseButton Clicked="CloseModal" />
+        </ModalHeader>
+        <ModalBody>
+            @if (Book != null)
+            {
+                <p>Are you sure you want to delete the book with the title @Book.Title</p>
+            }
+            else
+            {
+                <p>No book selected.</p>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="CloseModal">Close</Button>
+            <Button Color="Color.Primary" Clicked="Delete">Delete</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
