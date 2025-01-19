@@ -1,6 +1,6 @@
 To run the project, go to the root directory and run the project with the commands docker-compose build and docker-compose up or just docker-compose up --build.
 
-You can add books frov files in csv format. Content of file have to be something like this:
+You can add books from files in csv format. Content of file have to be something like this:
 [
     {
         "Title": "Sample Book 85",
@@ -15,3 +15,5 @@ You can add books frov files in csv format. Content of file have to be something
         "PublishedDate": "2023-01-17T16:22:22.369908"
     }
 ]
+
+Logging on Client side is added just for watching how it works. In the future it can be replaced with toast messages
