@@ -17,3 +17,5 @@ You can add books from files in csv format. Content of file have to be something
 ]
 
 Logging on Client side is added just for watching how it works. In the future it can be replaced with toast messages
+
+And DB initialization is added just for test purpose
