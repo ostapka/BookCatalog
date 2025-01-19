@@ -54,13 +54,5 @@ namespace BookCatalog.Client.BookDialogComponent
 
             await CloseModal();
         }
-
-        private void OnBookChanged()
-        {
-            if (BookChanged.HasDelegate)
-            {
-                BookChanged.InvokeAsync(Book);
-            }
-        }
     }
 }

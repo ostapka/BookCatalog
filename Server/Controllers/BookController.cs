@@ -58,9 +58,9 @@ namespace BookCatalog.Server.Controllers
             var book = await mediator.Send(command);
             var response = mapper.Map<BookResponse>(book);
 
-            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", "A new book was added.");
+            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", $"A new book with key {response.BookKey} was added.");
 
-            return CreatedAtAction(nameof(GetBookByKey), new { bookKey = book.BookKey }, book);
+            return CreatedAtAction(nameof(GetBookByKey), new { bookKey = response.BookKey }, response);
         }
 
         [HttpPost("bulkadd")]
@@ -70,9 +70,9 @@ namespace BookCatalog.Server.Controllers
             var books = await mediator.Send(command);
             var response = mapper.Map<IEnumerable<BookResponse>>(books);
 
-            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", "New books were added.");
+            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", $"New {response.Count()} books were added.");
 
-            return CreatedAtAction(nameof(GetPage), books); ;
+            return CreatedAtAction(nameof(GetPage), books);
         }
 
         [HttpPut("{bookKey}")]
@@ -86,7 +86,7 @@ namespace BookCatalog.Server.Controllers
             var data = await mediator.Send(command);
             var result = mapper.Map<BookResponse>(data);
 
-            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", "A book was updated.");
+            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", $"A book with key {result.BookKey} was updated.");
 
             return Ok(new SingleEntityResponse<BookResponse>(result));
         }
@@ -96,9 +96,9 @@ namespace BookCatalog.Server.Controllers
         {
             var command = new DeleteBookCommand(bookKey);
 
-            var result = await mediator.Send(command);
+            await mediator.Send(command);
 
-            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", "A book was deleted.");
+            await hubContext.Clients.All.SendAsync("ReceiveBookUpdate", $"A book with key {bookKey} was deleted.");
 
             return NoContent();
         }

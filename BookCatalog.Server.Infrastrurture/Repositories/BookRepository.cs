@@ -54,9 +54,7 @@ namespace BookCatalog.Server.Infrastructure.Repositories
 
             parameters.Add("Offset", offset);
             parameters.Add("Limit", limit);
-
-            var books1 = sort.Select(x => x.AttributeName);
-
+            
             string orderBy = string.Join(", ", sort.Select(c => $"{c.AttributeName} {(c.SortOrder == SortOrder.Desc ? "desc" : "asc")}"));
 
             var books = context.Books.
@@ -64,7 +62,7 @@ namespace BookCatalog.Server.Infrastructure.Repositories
                     book.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                     book.Author.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                     book.Genre.Contains(search, StringComparison.OrdinalIgnoreCase) :
-                    book == book).
+                    true).
                 OrderBy(orderBy).
                 Skip(offset * limit).
                 Take(limit).
@@ -82,7 +80,7 @@ namespace BookCatalog.Server.Infrastructure.Repositories
 
             if (book == null)
             {
-                throw new NullReferenceException();
+                throw new NullReferenceException("book can't be null");
             }
 
             return book;

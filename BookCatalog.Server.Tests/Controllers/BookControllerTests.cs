@@ -111,7 +111,7 @@ namespace BookCatalog.Server.Tests.Controllers
             mockClientProxy.Verify(
                 client => client.SendCoreAsync(
                     "ReceiveBookUpdate",
-                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == "A new book was added."),
+                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == $"A new book with key {bookDto.BookKey} was added."),
                     default),
                 Times.Once
             );
@@ -178,7 +178,13 @@ namespace BookCatalog.Server.Tests.Controllers
                 Author = bookRequest.Author
             };
 
-            var response = new BookDto()
+            var bookDto = new BookDto()
+            {
+                BookKey = bookKey,
+                Title = "test",
+                Author = "Author_1"
+            };
+            var response = new BookResponse()
             {
                 BookKey = bookKey,
                 Title = "test",
@@ -188,10 +194,12 @@ namespace BookCatalog.Server.Tests.Controllers
             mapperMock
                 .Setup(x => x.Map<UpdateBookCommand>(bookRequest))
                 .Returns(command);
-
+            mapperMock
+                .Setup(x => x.Map<BookResponse>(bookDto))
+                .Returns(response);
             mediatorMock
                .Setup(d => d.Send(command, It.IsAny<CancellationToken>()))
-               .ReturnsAsync(response);
+               .ReturnsAsync(bookDto);
 
             mockClients.Setup(clients => clients.All).Returns(mockClientProxy.Object);
             hubContextMock.Setup(hub => hub.Clients).Returns(mockClients.Object);
@@ -203,7 +211,7 @@ namespace BookCatalog.Server.Tests.Controllers
             mockClientProxy.Verify(
                 client => client.SendCoreAsync(
                     "ReceiveBookUpdate",
-                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == "A book was updated."),
+                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == $"A book with key {response.BookKey} was updated."),
                     default),
                 Times.Once
             );
@@ -236,7 +244,7 @@ namespace BookCatalog.Server.Tests.Controllers
             mockClientProxy.Verify(
                 client => client.SendCoreAsync(
                     "ReceiveBookUpdate",
-                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == "A book was deleted."),
+                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == $"A book with key {bookKey} was deleted."),
                     default),
                 Times.Once
             );
@@ -279,7 +287,7 @@ namespace BookCatalog.Server.Tests.Controllers
             mockClientProxy.Verify(
                 client => client.SendCoreAsync(
                     "ReceiveBookUpdate",
-                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == "New books were added."),
+                    It.Is<object[]>(args => args.Length == 1 && (string)args[0] == $"New {booksDtoList.Count} books were added."),
                     default),
                 Times.Once
             );

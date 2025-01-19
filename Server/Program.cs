@@ -52,6 +52,12 @@ builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection(
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 builder.Services.AddInMemoryRateLimiting();
 
+// Add logging configuration
+builder.Logging.ClearProviders(); // Optional: Clear default providers
+builder.Logging.AddConsole();    // Log to the console
+builder.Logging.AddDebug();      // Log to the debug output window
+builder.Logging.AddEventSourceLogger(); // Optional: Log to Event Source
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(5000); // HTTP

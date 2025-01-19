@@ -2,9 +2,11 @@
 using BookCatalog.Server.AppCore.Books.Commands;
 using BookCatalog.Server.AppCore.Books.Commands.Handlers;
 using BookCatalog.Server.Domain.Entities;
+using BookCatalog.Server.Infrastructure.Repositories;
 using BookCatalog.Shared.Interfaces.Repositories;
 using BookCatalog.Shared.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net.Mime;
 using System.Text;
@@ -16,6 +18,7 @@ namespace BookCatalog.Server.AppCore.Tests.Books.Handlers
     {
         private readonly Mock<IMapper> mapperMock = new Mock<IMapper>();
         private readonly Mock<IBookRepository> bookRepositoryMock = new Mock<IBookRepository>();
+        private readonly Mock<ILogger<AddBooksCommandHandler>> logger = new Mock<ILogger<AddBooksCommandHandler>>();
         private readonly Mock<IFormFile> formFile = new Mock<IFormFile>();
         private readonly AddBooksCommandHandler addBooksCommandHandler;
 
@@ -23,7 +26,8 @@ namespace BookCatalog.Server.AppCore.Tests.Books.Handlers
         {
             addBooksCommandHandler = new AddBooksCommandHandler(
                 bookRepositoryMock.Object,
-                mapperMock.Object);
+                mapperMock.Object,
+                logger.Object);
         }
 
         [TestMethod]
