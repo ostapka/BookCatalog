@@ -31,7 +31,7 @@ namespace BookCatalog.Server.Tests.ModelBinders
             var binder = sortModelBinderProvider.GetBinder(stub);
 
             // Assert
-            Assert.IsTrue(binder != null);
+            Assert.IsTrue(binder is not null);
             Assert.IsTrue(typeof(IModelBinder).IsAssignableFrom(typeof(SortModelBinder)));
         }
 

@@ -52,17 +52,17 @@ namespace BookCatalog.Client.Services
         {
             StringBuilder strB = new StringBuilder();
 
-            if (pageNumber != null)
+            if (pageNumber is not null)
             {
                 strB.Append($"offset={pageNumber - 1}&");
             }
 
-            if (pageSize != null)
+            if (pageSize is not null)
             {
                 strB.Append($"limit={pageSize}&");
             }
 
-            if (sortParam != null)
+            if (sortParam is not null)
             {
                 strB.Append($"sort.{sortParam["sortField"]}={sortParam["sortOrder"]}&");
             }

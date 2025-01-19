@@ -78,9 +78,9 @@ namespace BookCatalog.Server.Infrastructure.Repositories
         {
             var book = await context.Books.FirstOrDefaultAsync(b => b.BookKey == bookKey);
 
-            if (book == null)
+            if (book is null)
             {
-                throw new NullReferenceException("book can't be null");
+                throw new InvalidOperationException("book object can't be null");
             }
 
             return book;
@@ -106,7 +106,7 @@ namespace BookCatalog.Server.Infrastructure.Repositories
         {
             var updatingBook = await GetByKeyAsync(book.BookKey);
 
-            if (updatingBook != null)
+            if (updatingBook is not null)
             {
                 updatingBook.Title = book.Title;
                 updatingBook.Author = book.Author;
@@ -130,7 +130,7 @@ namespace BookCatalog.Server.Infrastructure.Repositories
         {
             var deletingBook = await GetByKeyAsync(bookKey);
 
-            if (deletingBook != null)
+            if (deletingBook is not null)
             {
                 context.Books.Remove(deletingBook);
 

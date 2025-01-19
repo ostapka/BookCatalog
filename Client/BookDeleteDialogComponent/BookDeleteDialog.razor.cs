@@ -6,7 +6,7 @@ namespace BookCatalog.Client.BookDeleteDialogComponent
 {
     public partial class BookDeleteDialog : ComponentBase
     {
-        [Inject] public IBookService BooksData { get; set; }
+        [Inject] public IBookService? BooksData { get; set; }
 
         [Parameter] public bool IsVisible { get; set; }
         [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
@@ -21,10 +21,10 @@ namespace BookCatalog.Client.BookDeleteDialogComponent
 
         private async Task Delete()
         {
-            if (Book != null)
+            if (Book is not null)
             {
 
-                await BooksData.DeleteBookAsync(Book.BookKey);
+                await BooksData!.DeleteBookAsync(Book.BookKey);
             }
 
             await CloseModal();

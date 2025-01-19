@@ -11,17 +11,17 @@ namespace BookCatalog.Client.BookListComponent
 {
     public partial class BookList : ComponentBase, IDisposable
     {
-        [Inject] public IBookService BooksData { get; set; }
-        [Inject] public HubConnection HubConnection { get; set; }
-        [Inject] public NavigationManager NavigationManager { get; set; }
-        [Inject] public IJSRuntime JSRuntime { get; set; }
-        [Inject] public ILogger<BookList> Logger { get; set; }
+        [Inject] public IBookService? BooksData { get; set; }
+        [Inject] public HubConnection? HubConnection { get; set; }
+        [Inject] public NavigationManager? NavigationManager { get; set; }
+        [Inject] public IJSRuntime? JSRuntime { get; set; }
+        [Inject] public ILogger<BookList>? Logger { get; set; }
 
         private bool modalVisible;
         private bool deleteModalVisible;
 
-        private List<BookResponse> booksList;
-        private BookResponse selectedBook;
+        private List<BookResponse>? booksList;
+        private BookResponse? selectedBook;
         private int totalItemCount;
         private int pageNumber;
         private int pageSize;
@@ -33,7 +33,7 @@ namespace BookCatalog.Client.BookListComponent
 
         private string inputText = string.Empty;
 
-        private DataGrid<BookResponse> dataGrid;
+        private DataGrid<BookResponse>? dataGrid;
 
         private bool disposed = false;
 
@@ -42,46 +42,47 @@ namespace BookCatalog.Client.BookListComponent
             inputText = newText;
 
             // Trigger DataGrid to reload its data
-            if (dataGrid != null)
+            if (dataGrid is not null)
             {
-                Logger.LogDebug("Reloading DataGrid due to search text change.");
+                Logger!.LogDebug("Reloading DataGrid due to search text change.");
+
                 await dataGrid.Reload();
             }
         }
 
         private async Task TriggerFileUpload()
         {
+            Logger!.LogDebug("Triggering file upload dialog.");
             // Use JavaScript to click the hidden file input
-            Logger.LogDebug("Triggering file upload dialog.");
-            await JSRuntime.InvokeVoidAsync("triggerFileInputClick", "fileInput");
+            await JSRuntime!.InvokeVoidAsync("triggerFileInputClick", "fileInput");
         }
 
         private async Task HandleFileSelected(InputFileChangeEventArgs e)
         {
             selectedFile = e.File;
 
-            if (selectedFile != null)
+            if (selectedFile is not null)
             {
-                Logger.LogInformation("File selected: {FileName}, Size: {FileSize} bytes", selectedFile.Name, selectedFile.Size);
+                Logger!.LogInformation("File selected: {FileName}, Size: {FileSize} bytes", selectedFile.Name, selectedFile.Size);
                 await UploadFileToBackend();
             }
             else
             {
-                Logger.LogWarning("No file was selected.");
+                Logger!.LogWarning("No file was selected.");
             }
         }
 
         private async Task UploadFileToBackend()
         {
-            if (selectedFile == null)
+            if (selectedFile is null)
             {
-                Logger.LogWarning("No file selected for upload.");
+                Logger!.LogWarning("No file selected for upload.");
                 return;
             }
 
             try
             {
-                Logger.LogDebug("Uploading file {FileName} to backend.", selectedFile.Name);
+                Logger!.LogDebug("Uploading file {FileName} to backend.", selectedFile.Name);
 
                 // Create a MultipartFormDataContent for the file
                 var content = new MultipartFormDataContent();
@@ -102,16 +103,16 @@ namespace BookCatalog.Client.BookListComponent
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Logger.LogInformation("File uploaded successfully: {FileName}", selectedFile.Name);
+                    Logger!.LogInformation("File uploaded successfully: {FileName}", selectedFile.Name);
                 }
                 else
                 {
-                    Logger.LogError("Failed to upload file. Status: {StatusCode}", response.StatusCode);
+                    Logger!.LogError("Failed to upload file. Status: {StatusCode}", response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error occurred while uploading the file.");
+                Logger!.LogError(ex, "Error occurred while uploading the file.");
             }
         }
 
@@ -122,7 +123,7 @@ namespace BookCatalog.Client.BookListComponent
             if (isAdding)
             {
                 selectedBook = new BookResponse();
-                Logger.LogDebug("Preparing to add a new book.");
+                Logger!.LogDebug("Preparing to add a new book.");
             }
             
             modalVisible = true;
@@ -131,22 +132,19 @@ namespace BookCatalog.Client.BookListComponent
 
         private Task ShowDeleteModal()
         {
-            if (selectedBook == null)
+            if (selectedBook is null)
             {
                 selectedBook = new BookResponse();
-                Logger.LogWarning("Delete operation triggered without a selected book.");
+                Logger!.LogWarning("Delete operation triggered without a selected book.");
             }
             deleteModalVisible = true;
-            Logger.LogDebug("Delete dialog displayed for book: {Book}", selectedBook.BookKey);
+            Logger!.LogDebug("Delete dialog displayed for book: {Book}", selectedBook.BookKey);
             return Task.CompletedTask;
         }
 
         private Task SaveBookDetails()
         {
-            if (selectedBook != null)
-            {
-                Logger.LogInformation("Saving book details: {Book}", selectedBook.BookKey);
-            }
+            Logger!.LogInformation("Saving book details: {Book}", selectedBook.BookKey);
 
             return Task.CompletedTask;
         }
@@ -154,22 +152,22 @@ namespace BookCatalog.Client.BookListComponent
         protected override async Task OnInitializedAsync()
         {
             // Establish the SignalR connection
-            HubConnection.On<string>("ReceiveBookUpdate", async (message) =>
+            HubConnection!.On<string>("ReceiveBookUpdate", async (message) =>
             {
                 // Update the DataGrid by refreshing the data
-                Logger.LogInformation("SignalR update received: {Message}", message);
+                Logger!.LogInformation("SignalR update received: {Message}", message);
                 await RefreshData();
             });
 
-            await HubConnection.StartAsync();
-            Logger.LogInformation("SignalR connection started.");
+            await HubConnection!.StartAsync();
+            Logger!.LogInformation("SignalR connection started.");
         }
 
         // Refresh the data when an update is received
         private async Task RefreshData()
         {
-            Logger.LogDebug("Refreshing data...");
-
+            Logger!.LogDebug("Refreshing data...");
+            
             // Re-fetch the data, you can optionally pass the current page and size if needed
             await GetResponce(pageNumber, pageSize);
 
@@ -194,7 +192,8 @@ namespace BookCatalog.Client.BookListComponent
                 if (HubConnection?.State == HubConnectionState.Connected)
                 {
                     HubConnection.StopAsync().GetAwaiter().GetResult();
-                    Logger.LogInformation("SignalR connection stopped.");
+                    
+                    Logger!.LogInformation("SignalR connection stopped.");
                 }
             }
             
@@ -207,8 +206,8 @@ namespace BookCatalog.Client.BookListComponent
             pageNumber = args.Page;
             pageSize = args.PageSize;
 
-            Logger.LogDebug("Loading data for page {PageNumber} with size {PageSize}.", pageNumber, pageSize);
-
+            Logger!.LogDebug("Loading data for page {PageNumber} with size {PageSize}.", pageNumber, pageSize);
+            
             // Fetch data from server
             await GetResponce(pageNumber, pageSize, sortParam, inputText);
         }
@@ -219,9 +218,9 @@ namespace BookCatalog.Client.BookListComponent
             var sortField = args.ColumnFieldName;
             var sortOrder = args.SortDirection == SortDirection.Descending ? "desc" : "asc";
 
-            Logger.LogInformation("Sort changed: Field = {Field}, Order = {Order}", sortField, sortOrder);
-
-            // Update the query parameters in the URL
+            Logger!.LogInformation("Sort changed: Field = {Field}, Order = {Order}", sortField, sortOrder);
+            
+            
             sortParam = new Dictionary<string, string>
             {
                 ["sortField"] = sortField,
@@ -231,16 +230,16 @@ namespace BookCatalog.Client.BookListComponent
 
         private async Task GetResponce(int pageNumber, int pageSize, Dictionary<string, string> sortParam = null, string searchFactor = null)
         {
-            Logger.LogDebug("Fetching data: Page = {Page}, Size = {Size}, Sort = {Sort}, Search = {Search}",
+            Logger!.LogDebug("Fetching data: Page = {Page}, Size = {Size}, Sort = {Sort}, Search = {Search}",
                             pageNumber, pageSize, sortParam, searchFactor);
 
-            var response = await BooksData.GetBooksAsync(pageNumber, pageSize, sortParam, searchFactor);
+            var response = await BooksData!.GetBooksAsync(pageNumber, pageSize, sortParam, searchFactor);
 
             // Update DataGrid
             booksList = response.Data.ToList();
             totalItemCount = response.TotalCount;
 
-            Logger.LogInformation("Data fetched: {Count} items, Total = {Total}", booksList.Count, totalItemCount);
+            Logger!.LogInformation("Data fetched: {Count} items, Total = {Total}", booksList.Count, totalItemCount);
         }
     }
 }

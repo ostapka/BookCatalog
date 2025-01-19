@@ -5,7 +5,7 @@
             <CloseButton Clicked="CloseModal" />
         </ModalHeader>
         <ModalBody>
-            @if (Book != null)
+            @if (Book is not null)
             {
                 <p>Are you sure you want to delete the book with the title @Book.Title</p>
             }

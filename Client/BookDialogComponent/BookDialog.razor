@@ -5,7 +5,7 @@
             <CloseButton Clicked="CloseModal" />
         </ModalHeader>
         <ModalBody>
-            @if (Book != null)
+            @if (Book is not null)
             {
                 <Field Class="d-flex align-items-center gap-2">
                     <FieldLabel>Title</FieldLabel>

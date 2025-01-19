@@ -37,9 +37,9 @@ namespace BookCatalog.Server.AppCore.Books.Commands.Handlers
 
         public async Task<IEnumerable<BookDto>> Handle(AddBooksCommand command, CancellationToken cancellationToken)
         {
-            if (command.File == null || command.File.Length == 0)
+            if (command.File is null || command.File.Length == 0)
             {
-                throw new ArgumentNullException("command.File can't be null");
+                throw new ArgumentNullException(nameof(command), "command.File can't be null");
             }
 
             try
@@ -50,14 +50,14 @@ namespace BookCatalog.Server.AppCore.Books.Commands.Handlers
 
                 var books = JsonSerializer.Deserialize<IEnumerable<Book>>(content, jsonOptions);
 
-                if (books != null)
+                if (books is not null)
                 {
                     var response = await bookRepository.AddBooksAsync(books);
 
                     return mapper.Map<IEnumerable<BookDto>>(response);
                 }
 
-                throw new ArgumentNullException("book can't be null");
+                throw new InvalidOperationException("The books object is in an invalid state.");
             }
             catch (JsonException jsonEx)
             {

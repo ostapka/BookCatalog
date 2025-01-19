@@ -30,7 +30,7 @@ namespace BookCatalog.Server.AppCore.Books.Queries.Handlers
         {
             var book = await bookRepository.GetByKeyAsync(query.BookKey);
 
-            if (book == null)
+            if (book is null)
             {
                 throw new NotFoundException($"Could not find {nameof(book)}", Error.NotFound);
             }

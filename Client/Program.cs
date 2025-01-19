@@ -28,7 +28,7 @@ var configResponse = await httpClient.GetAsync("appsettings.json");
 
 if (!configResponse.IsSuccessStatusCode)
 {
-    throw new Exception("Could not load appsettings.json");
+    throw new InvalidOperationException("Could not load appsettings.json");
 }
 
 var configJson = await configResponse.Content.ReadAsStringAsync();
@@ -39,22 +39,22 @@ var configuration = new ConfigurationBuilder()
 // Bind the configuration only for Docker
 var apiConfig = configuration.GetSection("ApiConfig").Get<Configuration>();
 
-if (apiConfig == null)
+if (apiConfig is null)
 {
-    throw new Exception("Failed to bind ApiConfig section to Configuration class");
+    throw new InvalidOperationException("Failed to bind ApiConfig section to Configuration class");
 }
 
 // Load logging configuration
 var loggingConfig = configuration.GetSection("Logging:LogLevel").Get<Dictionary<string, string>>();
 
-if (loggingConfig == null)
+if (loggingConfig is null)
 {
-    throw new Exception("Failed to get LoggingConfig section");
+    throw new InvalidOperationException("Failed to get LoggingConfig section");
 }
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiConfig.ApiBaseUrl) });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiConfig.ApiBaseUrl!) });
 
-if (loggingConfig != null)
+if (loggingConfig is not null)
 {
     foreach (var (category, level) in loggingConfig)
     {

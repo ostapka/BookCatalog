@@ -7,7 +7,7 @@ namespace BookCatalog.Client.BookDialogComponent
 {
     public partial class BookDialog : ComponentBase
     {
-        [Inject] public IBookService BooksData { get; set; }
+        [Inject] public IBookService? BooksData { get; set; }
         [Parameter] public bool IsVisible { get; set; }
         [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
         [Parameter] public BookResponse? Book { get; set; }
@@ -23,7 +23,7 @@ namespace BookCatalog.Client.BookDialogComponent
 
         private async Task SaveChanges()
         {
-            if (Book != null && adding)
+            if (Book is not null && adding)
             {
                 var book = new BookRequest()
                 {
@@ -32,10 +32,10 @@ namespace BookCatalog.Client.BookDialogComponent
                     Genre = Book.Genre,
                     PublishedDate = Book.PublishedDate
                 };
-                await BooksData.AddBookAsync(book);
+                await BooksData!.AddBookAsync(book);
             }
 
-            if (Book != null && !adding)
+            if (Book is not null && !adding)
             {
                 var book = new BookRequest()
                 {
@@ -44,7 +44,7 @@ namespace BookCatalog.Client.BookDialogComponent
                     Genre = Book.Genre,
                     PublishedDate = Book.PublishedDate
                 };
-                await BooksData.UpdateBookAsync(Book.BookKey, book);
+                await BooksData!.UpdateBookAsync(Book.BookKey, book);
             }
 
             if (OnSave.HasDelegate)

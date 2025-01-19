@@ -31,9 +31,9 @@ namespace BookCatalog.Server.ModelBinders
             {
                 IModelBinder defaultBinder = ModelBinderProviders
                    .Where(x => x.GetType() != this.GetType())
-                   .Select(x => x.GetBinder(context)).FirstOrDefault(x => x != null);
+                   .Select(x => x.GetBinder(context)).FirstOrDefault(x => x is not null);
 
-                if (defaultBinder != null)
+                if (defaultBinder is not null)
                 {
                     return new SortModelBinder(defaultBinder);
                 }

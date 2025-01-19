@@ -2,6 +2,6 @@
 {
     public class Configuration
     {
-        public string ApiBaseUrl { get; set; }
+        public string? ApiBaseUrl { get; set; }
     }
 }
