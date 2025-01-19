@@ -34,7 +34,6 @@ namespace BookCatalog.Server.AppCore.Tests.Books.Handlers
         public async Task Handle_WhenAddBooksCommandIsValid_ShouldAddNewBooks()
         {
             // Arrange
-            var command = new AddBooksCommand();
             var content = "[{\"Title\":\"test\"}]";
             using var contentStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
             // Mock the properties
@@ -49,7 +48,7 @@ namespace BookCatalog.Server.AppCore.Tests.Books.Handlers
                             contentStream.CopyTo(stream);
                         })
                         .Returns(Task.CompletedTask);
-            command.File = formFile.Object;
+            var command = new AddBooksCommand { File = formFile.Object };
 
             var booksList = new List<Book> { new Book { Title = "test" } };
             var booksDtoList = new List<BookDto> { new BookDto { Title = "test" } };
@@ -70,16 +69,14 @@ namespace BookCatalog.Server.AppCore.Tests.Books.Handlers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public async Task Handle_WhenAddBooksCommandIsNotValid_ShouldThrowException()
         {
             // Arrange
-            var command = new AddBooksCommand();
-            command.File = formFile.Object;
+            var command = new AddBooksCommand { File = formFile.Object };
 
             // Act
-            await addBooksCommandHandler.Handle(command, new CancellationToken());
             // Assert
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await addBooksCommandHandler.Handle(command, new CancellationToken()));
         }
     }
 }

@@ -35,6 +35,8 @@ namespace BookCatalog.Client.BookListComponent
 
         private DataGrid<BookResponse> dataGrid;
 
+        private bool disposed = false;
+
         private async Task OnSearchTextChanged(string newText)
         {
             inputText = newText;
@@ -177,11 +179,26 @@ namespace BookCatalog.Client.BookListComponent
 
         public void Dispose()
         {
-            if (HubConnection.State == HubConnectionState.Connected)
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this); // Prevents finalization if already disposed
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
             {
-                HubConnection.StopAsync();
-                Logger.LogInformation("SignalR connection stopped.");
+                // Dispose managed resources
+                if (HubConnection?.State == HubConnectionState.Connected)
+                {
+                    HubConnection.StopAsync().GetAwaiter().GetResult();
+                    Logger.LogInformation("SignalR connection stopped.");
+                }
             }
+            
+            disposed = true;
         }
 
         private async Task LoadData(DataGridReadDataEventArgs<BookResponse> args)

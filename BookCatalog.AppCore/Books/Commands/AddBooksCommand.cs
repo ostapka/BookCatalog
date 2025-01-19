@@ -6,6 +6,6 @@ namespace BookCatalog.Server.AppCore.Books.Commands
 {
     public class AddBooksCommand : IRequest<IEnumerable<BookDto>>
     {
-        public IFormFile File { get; set; }
+        public required IFormFile File { get; set; }
     }
 }

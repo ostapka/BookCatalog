@@ -17,6 +17,11 @@ namespace BookCatalog.Server.AppCore.Books.Commands.Handlers
         private readonly IMapper mapper;
         private readonly ILogger<AddBooksCommandHandler> logger;
 
+        private static readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         /// <summary>
         /// AddBooksCommandHandler constructor
         /// </summary>
@@ -41,17 +46,18 @@ namespace BookCatalog.Server.AppCore.Books.Commands.Handlers
             {
                 // Process the file
                 using var streamReader = new StreamReader(command.File.OpenReadStream());
-                var content = await streamReader.ReadToEndAsync();
+                var content = await streamReader.ReadToEndAsync(cancellationToken);
 
-                var books = JsonSerializer.Deserialize<IEnumerable<Book>>(content, new JsonSerializerOptions
+                var books = JsonSerializer.Deserialize<IEnumerable<Book>>(content, jsonOptions);
+
+                if (books != null)
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    var response = await bookRepository.AddBooksAsync(books);
 
-                var response = await bookRepository.AddBooksAsync(books);
+                    return mapper.Map<IEnumerable<BookDto>>(response);
+                }
 
-                return mapper.Map<IEnumerable<BookDto>>(response);
-
+                throw new ArgumentNullException("book can't be null");
             }
             catch (JsonException jsonEx)
             {

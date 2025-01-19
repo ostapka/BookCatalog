@@ -57,7 +57,7 @@ namespace BookCatalog.Server.Infrastructure.Repositories
             
             string orderBy = string.Join(", ", sort.Select(c => $"{c.AttributeName} {(c.SortOrder == SortOrder.Desc ? "desc" : "asc")}"));
 
-            var books = context.Books.
+            var books = await context.Books.
                 Where(book => !string.IsNullOrEmpty(search) ?
                     book.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                     book.Author.Contains(search, StringComparison.OrdinalIgnoreCase) ||
@@ -66,7 +66,7 @@ namespace BookCatalog.Server.Infrastructure.Repositories
                 OrderBy(orderBy).
                 Skip(offset * limit).
                 Take(limit).
-                ToList();
+                ToListAsync();
 
             var result = new PagedEnumerable<Book>(books, count);
 
